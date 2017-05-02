@@ -15,7 +15,7 @@ from utils import progress_bar
 from torch.autograd import Variable
 
 
-def run_model(gpus, lr, momentum, weight_decay):
+def run_model(gpus, lr, momentum, weight_decay, verbose=False):
     use_cuda = torch.cuda.is_available()
     best_acc = 0  # best test accuracy
 
@@ -47,7 +47,8 @@ def run_model(gpus, lr, momentum, weight_decay):
 
     # Training
     def train(epoch):
-        # print('\nEpoch: %d' % epoch)
+        if verbose:
+            print('\nEpoch: %d' % epoch)
         net.train()
         train_loss = 0
         correct = 0
@@ -67,8 +68,9 @@ def run_model(gpus, lr, momentum, weight_decay):
             total += targets.size(0)
             correct += predicted.eq(targets.data).cpu().sum()
 
-        # print('Loss: %.3f | Acc: %.3f%% (%d/%d)'
-        #     % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
+            if verbose and batch_idx % 10 == 0:
+                print('Loss: %.3f | Acc: %.3f%% (%d/%d)'
+                    % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
     def test():
         global best_acc
@@ -88,8 +90,9 @@ def run_model(gpus, lr, momentum, weight_decay):
             total += targets.size(0)
             correct += predicted.eq(targets.data).cpu().sum()
 
-        # print('Loss: %.3f | Acc: %.3f%% (%d/%d)'
-        #     % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
+            if verbose and batch_idx % 10 == 0:
+                print('Loss: %.3f | Acc: %.3f%% (%d/%d)'
+                    % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
         return correct / total
 
@@ -111,8 +114,8 @@ def run_model(gpus, lr, momentum, weight_decay):
         train(epoch)
         test()
 
-    return test()
-
+    final_accuracy = test()
+    return final_accuracy
 
 if __name__ == '__main__':
     run_model([0, 1], [0.1, 0.01, 0.001], 0.9, 5e-4)
