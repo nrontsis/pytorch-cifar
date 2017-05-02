@@ -14,8 +14,6 @@ from models import *
 from utils import progress_bar
 from torch.autograd import Variable
 
-import numpy as np
-
 
 def run_model(gpus, lr, momentum, weight_decay):
     use_cuda = torch.cuda.is_available()
@@ -69,8 +67,8 @@ def run_model(gpus, lr, momentum, weight_decay):
             total += targets.size(0)
             correct += predicted.eq(targets.data).cpu().sum()
 
-            progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-                % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
+        print('Loss: %.3f | Acc: %.3f%% (%d/%d)'
+            % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
     def test():
         global best_acc
@@ -90,8 +88,8 @@ def run_model(gpus, lr, momentum, weight_decay):
             total += targets.size(0)
             correct += predicted.eq(targets.data).cpu().sum()
 
-            progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-                % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
+        print('Loss: %.3f | Acc: %.3f%% (%d/%d)'
+            % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
         return correct / total
 
@@ -117,4 +115,4 @@ def run_model(gpus, lr, momentum, weight_decay):
 
 
 if __name__ == '__main__':
-    run_model(np.array([0, 1]), [0.1, 0.01, 0.001], 0.9, 5e-4)
+    run_model([0, 1], [0.1, 0.01, 0.001], 0.9, 5e-4)
