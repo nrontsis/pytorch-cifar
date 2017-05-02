@@ -47,7 +47,7 @@ def run_model(gpus, lr, momentum, weight_decay):
 
     # Training
     def train(epoch):
-        print('\nEpoch: %d' % epoch)
+        # print('\nEpoch: %d' % epoch)
         net.train()
         train_loss = 0
         correct = 0
@@ -67,8 +67,8 @@ def run_model(gpus, lr, momentum, weight_decay):
             total += targets.size(0)
             correct += predicted.eq(targets.data).cpu().sum()
 
-        print('Loss: %.3f | Acc: %.3f%% (%d/%d)'
-            % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
+        # print('Loss: %.3f | Acc: %.3f%% (%d/%d)'
+        #     % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
     def test():
         global best_acc
@@ -88,8 +88,8 @@ def run_model(gpus, lr, momentum, weight_decay):
             total += targets.size(0)
             correct += predicted.eq(targets.data).cpu().sum()
 
-        print('Loss: %.3f | Acc: %.3f%% (%d/%d)'
-            % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
+        # print('Loss: %.3f | Acc: %.3f%% (%d/%d)'
+        #     % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
         return correct / total
 
