@@ -73,12 +73,12 @@ def run_model(gpus, lr, momentum, weight_decay, verbose=False):
             total += targets.size(0)
             correct += predicted.eq(targets.data).cpu().sum()
 
-            if verbose and batch_idx % 10 == 0:
+            if verbose and batch_idx % 20 == 0:
                 print('Loss: %.3f | Acc: %.3f%% (%d/%d)'
                     % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
     def test():
-        if test:
+        if verbose:
             print('Test')
         net.eval()
         test_loss = 0
@@ -96,7 +96,7 @@ def run_model(gpus, lr, momentum, weight_decay, verbose=False):
             total += targets.size(0)
             correct += predicted.eq(targets.data).cpu().sum()
 
-            if verbose and batch_idx % 10 == 0:
+            if verbose and batch_idx % 20 == 0:
                 print('Loss: %.3f | Acc: %.3f%% (%d/%d)'
                     % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
@@ -121,7 +121,7 @@ def run_model(gpus, lr, momentum, weight_decay, verbose=False):
             total += targets.size(0)
             correct += predicted.eq(targets.data).cpu().sum()
 
-            if verbose and batch_idx % 10 == 0:
+            if verbose and batch_idx % 20 == 0:
                 print('Loss: %.3f | Acc: %.3f%% (%d/%d)'
                     % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
@@ -132,21 +132,21 @@ def run_model(gpus, lr, momentum, weight_decay, verbose=False):
     for epoch in range(0, 25):
         train(epoch)
         validate()
-        # test()
+        test()
 
     optimizer = optim.SGD(net.parameters(), lr=lr[1], momentum=momentum,
                           weight_decay=weight_decay)
     for epoch in range(26, 50):
         train(epoch)
         validate()
-        # test()
+        test()
 
     optimizer = optim.SGD(net.parameters(), lr=lr[2], momentum=momentum,
                           weight_decay=weight_decay)
     for epoch in range(51, 75):
         train(epoch)
         validate()
-        # test()
+        test()
 
     val_accuracy = validate()
     test_accuracy = test()
