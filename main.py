@@ -50,8 +50,6 @@ def run_model(gpus, lr, momentum, weight_decay, verbose=False):
 
     criterion = nn.CrossEntropyLoss()
 
-    for batch_idx, (inputs, targets) in enumerate(train_loader):
-        print(batch_idx)
     # Training
     def train(epoch):
         if verbose:
@@ -134,18 +132,21 @@ def run_model(gpus, lr, momentum, weight_decay, verbose=False):
     for epoch in range(0, 25):
         train(epoch)
         validate()
+        # test()
 
     optimizer = optim.SGD(net.parameters(), lr=lr[1], momentum=momentum,
                           weight_decay=weight_decay)
     for epoch in range(26, 50):
         train(epoch)
         validate()
+        # test()
 
     optimizer = optim.SGD(net.parameters(), lr=lr[2], momentum=momentum,
                           weight_decay=weight_decay)
     for epoch in range(51, 75):
         train(epoch)
         validate()
+        # test()
 
     val_accuracy = validate()
     test_accuracy = test()
@@ -153,4 +154,4 @@ def run_model(gpus, lr, momentum, weight_decay, verbose=False):
     return val_accuracy, test_accuracy
 
 if __name__ == '__main__':
-    run_model([0, 1], [0.1, 0.01, 0.001], 0.9, 5e-4)
+    run_model([2], [0.1, 0.01, 0.001], 0.9, 5e-4, verbose=True)
