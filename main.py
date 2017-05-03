@@ -13,23 +13,23 @@ import torchvision.transforms as transforms
 from models import *
 from utils import progress_bar
 from torch.autograd import Variable
-from loader import create_loaders
+from loaders import create_loaders
 
 
 def run_model(gpus, lr, momentum, weight_decay, verbose=False):
     use_cuda = torch.cuda.is_available()
 
-    # Data
-    transform = transforms.Compose([
-        transforms.RandomCrop(32, padding=4),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-    ])
+    train_loader, val_loader, test_loader = create_loaders(
+        dataset='CIFAR100', cuda=True, augment=True, batch_size=128, test_batch_size=100)
 
-    train_loader, val_loader, test_loader = create_loaders(batch_size=128,
-                                                           test_batch_size=100)
-    # trainset = torchvision.datasets.CIFAR100(root='./data', train=True, download=False, transform=transform)
+    # Data
+    # transform = transforms.Compose([
+    #     transforms.RandomCrop(32, padding=4),
+    #     transforms.RandomHorizontalFlip(),
+    #     transforms.ToTensor(),
+    #     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    # ])
+    # trainset = torchvision.datasets.CIFAR100(root='./data', train=True, download=True, transform=transform)
     # trainloader = torch.utils.data.DataLoader(trainset, batch_size=128, shuffle=True, num_workers=2)
 
     # testset = torchvision.datasets.CIFAR100(root='./data', train=False, download=False, transform=transform)
@@ -47,6 +47,8 @@ def run_model(gpus, lr, momentum, weight_decay, verbose=False):
 
     criterion = nn.CrossEntropyLoss()
 
+    for batch_idx, (inputs, targets) in enumerate(train_loader):
+        print(batch_idx)
     # Training
     def train(epoch):
         if verbose:
