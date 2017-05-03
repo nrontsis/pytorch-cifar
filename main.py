@@ -19,8 +19,11 @@ from loaders import create_loaders
 def run_model(gpus, lr, momentum, weight_decay, verbose=False):
     use_cuda = torch.cuda.is_available()
 
-    train_loader, val_loader, test_loader = create_loaders(
-        dataset='CIFAR100', cuda=True, augment=True, batch_size=128, test_batch_size=100)
+    train_loader, val_loader, test_loader = create_loaders(dataset='CIFAR100',
+                                                           cuda=True,
+                                                           augment=True,
+                                                           batch_size=128,
+                                                           test_batch_size=100)
 
     # Data
     # transform = transforms.Compose([
