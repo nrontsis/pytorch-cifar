@@ -15,8 +15,7 @@ from utils import progress_bar
 from torch.autograd import Variable
 from loaders import create_loaders
 
-
-def run_model(gpus, lr, momentum, weight_decay, verbose=False):
+def run_model(lr, momentum, weight_decay, verbose=False):
     use_cuda = torch.cuda.is_available()
 
     train_loader, val_loader, test_loader = create_loaders(dataset='CIFAR100',
@@ -43,9 +42,8 @@ def run_model(gpus, lr, momentum, weight_decay, verbose=False):
     net = ConvNet(dataset='cifar100')
 
     if use_cuda:
-        torch.cuda.set_device(gpus[0])
         net.cuda()
-        net = torch.nn.DataParallel(net, device_ids=gpus)
+        net = torch.nn.DataParallel(net, device_ids=[0])
         cudnn.benchmark = True
 
     criterion = nn.CrossEntropyLoss()
