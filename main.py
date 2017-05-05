@@ -15,10 +15,27 @@ from utils import progress_bar
 from torch.autograd import Variable
 from loaders import create_loaders
 
-def run_model(lr, momentum, weight_decay, verbose=False):
+
+def create_optimizer(net, lr, momentum, wd):
+    """ Assume:
+    - lr scalar
+    - momentum scalar
+    - wd is an iterable with 4 elements
+    """
+    optimizer = optim.SGD({'params': net.block1.parameters(), 'weight_decay': wd[0]},
+                          {'params': net.block2.parameters(), 'weight_decay': wd[1]},
+                          {'params': net.block3.parameters(), 'weight_decay': wd[2]},
+                          {'params': net.fc.parameters(), 'weight_decay': wd[3]},
+                          lr=lr,
+                          momentum=momentum
+                          )
+    return optimizer
+
+
+def run_model(dataset, lr, momentum, weight_decay, verbose=False):
     use_cuda = torch.cuda.is_available()
 
-    train_loader, val_loader, test_loader = create_loaders(dataset='CIFAR100',
+    train_loader, val_loader, test_loader = create_loaders(dataset=dataset,
                                                            cuda=True,
                                                            augment=True,
                                                            batch_size=128,
@@ -39,7 +56,7 @@ def run_model(lr, momentum, weight_decay, verbose=False):
 
     classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
-    net = ConvNet(dataset='cifar100')
+    net = ConvNet(dataset=dataset)
 
     if use_cuda:
         net.cuda()
@@ -125,22 +142,19 @@ def run_model(lr, momentum, weight_decay, verbose=False):
 
         return correct / total
 
-    optimizer = optim.SGD(net.parameters(), lr=lr[0], momentum=momentum,
-                          weight_decay=weight_decay)
+    optimizer = create_optimizer(net, lr[0], momentum, wd)
     for epoch in range(0, 25):
         train(epoch)
         validate()
         test()
 
-    optimizer = optim.SGD(net.parameters(), lr=lr[1], momentum=momentum,
-                          weight_decay=weight_decay)
+    optimizer = create_optimizer(net, lr[1], momentum, wd)
     for epoch in range(26, 50):
         train(epoch)
         validate()
         test()
 
-    optimizer = optim.SGD(net.parameters(), lr=lr[2], momentum=momentum,
-                          weight_decay=weight_decay)
+    optimizer = create_optimizer(net, lr[2], momentum, wd)
     for epoch in range(51, 75):
         train(epoch)
         validate()
@@ -152,4 +166,5 @@ def run_model(lr, momentum, weight_decay, verbose=False):
     return val_accuracy, test_accuracy
 
 if __name__ == '__main__':
-    run_model([2], [0.1, 0.01, 0.001], 0.9, 5e-4, verbose=True)
+    run_model([2], [0.1, 0.01, 0.001], 0.9, [5e-4, 3e-6, 2e-7, 2e-3],
+              verbose=True)
