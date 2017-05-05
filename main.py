@@ -28,7 +28,6 @@ def create_optimizer(net, lr, momentum, wd):
                           {'params': net.fc.parameters(), 'weight_decay': wd[3]}],
                           lr=lr,
                           momentum=momentum,
-                          weight_decay=wd[4]
                           )
     return optimizer
 
@@ -167,5 +166,5 @@ def run_model(dataset, lr, momentum, weight_decay, verbose=False):
     return val_accuracy, test_accuracy
 
 if __name__ == '__main__':
-    run_model([2], [0.1, 0.01, 0.001], 0.9, [5e-4, 3e-6, 2e-7, 2e-3, 1e-4],
+    run_model([2], [0.1, 0.01, 0.001], 0.9, [5e-4, 3e-6, 2e-7, 2e-3],
               verbose=True)
