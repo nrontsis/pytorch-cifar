@@ -15,10 +15,10 @@ from utils import progress_bar
 from torch.autograd import Variable
 from loaders import create_loaders
 
-def run_model(lr, momentum, weight_decay, verbose=False):
+def run_model(dataset, lr, momentum, weight_decay, verbose=False):
     use_cuda = torch.cuda.is_available()
 
-    train_loader, val_loader, test_loader = create_loaders(dataset='CIFAR100',
+    train_loader, val_loader, test_loader = create_loaders(dataset=dataset,
                                                            cuda=True,
                                                            augment=True,
                                                            batch_size=128,
@@ -39,7 +39,7 @@ def run_model(lr, momentum, weight_decay, verbose=False):
 
     classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
-    net = ConvNet(dataset='cifar100')
+    net = ConvNet(dataset=dataset)
 
     if use_cuda:
         net.cuda()
