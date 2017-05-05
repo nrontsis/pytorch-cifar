@@ -22,12 +22,13 @@ def create_optimizer(net, lr, momentum, wd):
     - momentum scalar
     - wd is an iterable with 4 elements
     """
-    optimizer = optim.SGD({'params': net.block1.parameters(), 'weight_decay': wd[0]},
+    optimizer = optim.SGD([{'params': net.block1.parameters(), 'weight_decay': wd[0]},
                           {'params': net.block2.parameters(), 'weight_decay': wd[1]},
                           {'params': net.block3.parameters(), 'weight_decay': wd[2]},
-                          {'params': net.fc.parameters(), 'weight_decay': wd[3]},
+                          {'params': net.fc.parameters(), 'weight_decay': wd[3]}],
                           lr=lr,
-                          momentum=momentum
+                          momentum=momentum,
+                          weight_decay=wd[4]
                           )
     return optimizer
 
@@ -60,7 +61,7 @@ def run_model(dataset, lr, momentum, weight_decay, verbose=False):
 
     if use_cuda:
         net.cuda()
-        net = torch.nn.DataParallel(net, device_ids=[0])
+        # net = torch.nn.DataParallel(net, device_ids=[0])
         cudnn.benchmark = True
 
     criterion = nn.CrossEntropyLoss()
@@ -142,19 +143,19 @@ def run_model(dataset, lr, momentum, weight_decay, verbose=False):
 
         return correct / total
 
-    optimizer = create_optimizer(net, lr[0], momentum, wd)
+    optimizer = create_optimizer(net, lr[0], momentum, weight_decay)
     for epoch in range(0, 25):
         train(epoch)
         validate()
         test()
 
-    optimizer = create_optimizer(net, lr[1], momentum, wd)
+    optimizer = create_optimizer(net, lr[1], momentum, weight_decay)
     for epoch in range(26, 50):
         train(epoch)
         validate()
         test()
 
-    optimizer = create_optimizer(net, lr[2], momentum, wd)
+    optimizer = create_optimizer(net, lr[2], momentum, weight_decay)
     for epoch in range(51, 75):
         train(epoch)
         validate()
@@ -166,5 +167,5 @@ def run_model(dataset, lr, momentum, weight_decay, verbose=False):
     return val_accuracy, test_accuracy
 
 if __name__ == '__main__':
-    run_model([2], [0.1, 0.01, 0.001], 0.9, [5e-4, 3e-6, 2e-7, 2e-3],
+    run_model([2], [0.1, 0.01, 0.001], 0.9, [5e-4, 3e-6, 2e-7, 2e-3, 1e-4],
               verbose=True)
